@@ -1,0 +1,55 @@
+/* Custom Animations & Styles */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+section {
+    animation: fadeIn 0.25s ease-in-out forwards;
+}
+
+/* Custom Scrollbar for filter bar */
+::-webkit-scrollbar {
+    height: 4px;
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c7d2fe;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #818cf8;
+}
+
+/* Print Style Rules */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #section-ticket, #section-ticket * {
+        visibility: visible;
+    }
+    #section-ticket {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        box-shadow: none;
+    }
+    header, footer, button {
+        display: none !important;
+    }
+}

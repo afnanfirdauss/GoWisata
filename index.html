@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoWisata - Sistem Pembayaran Wisata Online</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header / Navbar -->
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="showSection('catalog')">
+                    <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md">
+                        <i class="fa-solid fa-[#ffffff] fa-compass text-2xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-emerald-500 bg-clip-text text-transparent">GoWisata</span>
+                        <span class="text-xs block text-gray-400 font-medium">Ticket & Travel</span>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <nav class="flex items-center space-x-2 sm:space-x-4">
+                    <button onclick="showSection('catalog')" id="nav-catalog" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition text-indigo-600 bg-indigo-50">
+                        <i class="fa-solid fa-[#4f46e5] fa-earth-asia mr-1.5"></i> Destinasi
+                    </button>
+                    <button onclick="showSection('history')" id="nav-history" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition text-gray-600 hover:text-indigo-600 hover:bg-gray-50 relative">
+                        <i class="fa-solid fa-[#4f46e5] fa-ticket mr-1.5"></i> Tiket Saya
+                        <span id="ticket-badge" class="hidden absolute -top-1 -right-1 bg-emerald-500 text-white text-xs px-1.5 py-0.5 rounded-full font-bold">0</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- SECTION 1: KATALOG DESTINASI -->
+        <section id="section-catalog" class="space-y-6">
+            <!-- Banner / Hero -->
+            <div class="bg-gradient-to-r from-indigo-600 to-indigo-800 rounded-2xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden">
+                <div class="relative z-10 max-w-2xl">
+                    <h1 class="text-2xl sm:text-4xl font-extrabold mb-3">Jelajahi Keindahan Wisata Indonesia</h1>
+                    <p class="text-indigo-100 text-sm sm:text-base mb-6">Pesan tiket destinasi favoritmu secara instan, aman, tanpa antre dengan e-ticket resmi.</p>
+                </div>
+            </div>
+
+            <!-- Filter & Search Bar -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4 justify-between items-center">
+                <!-- Search Input -->
+                <div class="relative w-full md:w-80">
+                    <i class="fa-solid fa-[#9ca3af] fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="search-input" oninput="filterDestinations()" placeholder="Cari destinasi atau kota..." class="w-full pl-10 pr-4 py-2 bg-gray-50 rounded-lg text-sm border border-gray-200 focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <!-- Category Filters -->
+                <div class="flex flex-wrap gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0" id="category-filters">
+                    <button onclick="setCategory('all')" class="cat-filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-indigo-600 text-white transition">Semua</button>
+                    <button onclick="setCategory('Pantai')" class="cat-filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Pantai</button>
+                    <button onclick="setCategory('Gunung')" class="cat-filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Gunung</button>
+                    <button onclick="setCategory('Budaya')" class="cat-filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Budaya</button>
+                    <button onclick="setCategory('Wahana')" class="cat-filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Wahana</button>
+                </div>
+            </div>
+
+            <!-- Destinasi Grid -->
+            <div id="destination-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Card wisata akan digenerate via Javascript -->
+            </div>
+        </section>
+
+        <!-- SECTION 2: FORM PEMESANAN & KALKULATOR -->
+        <section id="section-booking" class="hidden max-w-4xl mx-auto">
+            <button onclick="showSection('catalog')" class="mb-4 text-sm font-medium text-gray-500 hover:text-indigo-600 flex items-center gap-2">
+                <i class="fa-solid fa-[#6b7280] fa-arrow-left"></i> Kembali ke Katalog
+            </button>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Form Detail -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-6">
+                    <div id="booking-dest-header" class="flex gap-4 items-center pb-4 border-b">
+                        <!-- Image and title set dynamically -->
+                    </div>
+
+                    <form id="booking-form" onsubmit="event.preventDefault(); proceedToPayment();" class="space-y-4">
+                        <h3 class="font-bold text-gray-800 text-base">1. Informasi Pemesan</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Nama Lengkap</label>
+                                <input type="text" id="cust-name" required placeholder="Budi Santoso" class="w-full px-3 py-2 bg-gray-50 border rounded-lg text-sm focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Email (Pengiriman E-Ticket)</label>
+                                <input type="email" id="cust-email" required placeholder="budi@example.com" class="w-full px-3 py-2 bg-gray-50 border rounded-lg text-sm focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Nomor WhatsApp</label>
+                                <input type="tel" id="cust-phone" required placeholder="08123456789" class="w-full px-3 py-2 bg-gray-50 border rounded-lg text-sm focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Tanggal Kunjungan</label>
+                                <input type="date" id="visit-date" required onchange="calculateTotal()" class="w-full px-3 py-2 bg-gray-50 border rounded-lg text-sm focus:outline-none focus:border-indigo-500">
+                            </div>
+                        </div>
+
+                        <h3 class="font-bold text-gray-800 text-base pt-2">2. Jumlah Tiket & Layanan Tambahan</h3>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-800">Tiket Masuk Utama</p>
+                                <p class="text-xs text-gray-500" id="form-ticket-price">Rp 0 / orang</p>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <button type="button" onclick="updateQuantity(-1)" class="w-8 h-8 rounded-lg bg-white border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 font-bold">-</button>
+                                <span id="ticket-qty" class="font-bold text-sm">1</span>
+                                <button type="button" onclick="updateQuantity(1)" class="w-8 h-8 rounded-lg bg-white border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 font-bold">+</button>
+                            </div>
+                        </div>
+
+                        <!-- Add-ons -->
+                        <div class="space-y-2 pt-1">
+                            <label class="block text-xs font-semibold text-gray-600">Layanan Opsional</label>
+                            <label class="flex items-center justify-between p-3 border rounded-xl cursor-pointer hover:bg-gray-50">
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" id="addon-guide" onchange="calculateTotal()" class="rounded text-indigo-600 focus:ring-indigo-500">
+                                    <span class="text-xs font-medium text-gray-700">Pemandu Wisata Lokal (Tour Guide)</span>
+                                </div>
+                                <span class="text-xs font-bold text-gray-600">+Rp 100.000</span>
+                            </label>
+                            <label class="flex items-center justify-between p-3 border rounded-xl cursor-pointer hover:bg-gray-50">
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" id="addon-insurance" onchange="calculateTotal()" class="rounded text-indigo-600 focus:ring-indigo-500">
+                                    <span class="text-xs font-medium text-gray-700">Asuransi Perjalanan Ekstra</span>
+                                </div>
+                                <span class="text-xs font-bold text-gray-600">+Rp 10.000 / orang</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition mt-4">
+                            Lanjut ke Pembayaran <i class="fa-solid fa-[#ffffff] fa-arrow-right ml-1"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Summary Sidebar -->
+                <div class="bg-gray-900 text-white p-6 rounded-2xl shadow-lg h-fit space-y-4">
+                    <h3 class="font-bold text-lg border-b border-gray-700 pb-3">Rincian Biaya</h3>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between text-gray-300">
+                            <span id="summary-qty-label">1x Tiket Masuk</span>
+                            <span id="summary-subtotal">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between text-gray-300" id="summary-guide-row" style="display: none;">
+                            <span>Pemandu Wisata</span>
+                            <span>Rp 100.000</span>
+                        </div>
+                        <div class="flex justify-between text-gray-300" id="summary-insurance-row" style="display: none;">
+                            <span>Asuransi Ekstra</span>
+                            <span id="summary-insurance">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between text-gray-300">
+                            <span>Biaya Layanan Admin</span>
+                            <span>Rp 5.000</span>
+                        </div>
+                    </div>
+                    <div class="border-t border-gray-700 pt-3 flex justify-between items-center">
+                        <span class="text-sm font-semibold">Total Pembayaran</span>
+                        <span class="text-xl font-extrabold text-emerald-400" id="summary-grand-total">Rp 0</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: MODAL/PAYMENT PROCESS -->
+        <section id="section-payment" class="hidden max-w-xl mx-auto">
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-md border border-gray-100 space-y-6">
+                <div class="text-center">
+                    <h2 class="text-xl font-bold text-gray-800">Metode Pembayaran</h2>
+                    <p class="text-xs text-gray-500 mt-1">Selesaikan pembayaran Anda dalam <span id="payment-timer" class="text-rose-500 font-bold">15:00</span></p>
+                </div>
+
+                <!-- Selection Tabs -->
+                <div class="grid grid-cols-3 gap-2 p-1 bg-gray-100 rounded-xl text-xs font-semibold text-center">
+                    <button onclick="selectPaymentMethod('qris')" id="tab-qris" class="pay-tab py-2 rounded-lg bg-white shadow-sm text-indigo-600">QRIS</button>
+                    <button onclick="selectPaymentMethod('va')" id="tab-va" class="pay-tab py-2 rounded-lg text-gray-600">Virtual Account</button>
+                    <button onclick="selectPaymentMethod('card')" id="tab-card" class="pay-tab py-2 rounded-lg text-gray-600">Kartu Kredit</button>
+                </div>
+
+                <!-- QRIS Display -->
+                <div id="pay-content-qris" class="text-center space-y-3 py-4">
+                    <p class="text-xs text-gray-600">Scan QRIS menggunakan GoPay, OVO, ShopeePay, atau Mobile Banking:</p>
+                    <div class="w-48 h-48 bg-gray-100 rounded-xl mx-auto border-2 border-dashed border-gray-300 flex items-center justify-center p-2 relative">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=GOWISATA-PAYMENT-SIMULATION" alt="QRIS Code" class="w-full h-full object-contain">
+                    </div>
+                    <p class="text-xs font-bold text-indigo-600">Merchant: GoWisata Official</p>
+                </div>
+
+                <!-- VA Display -->
+                <div id="pay-content-va" class="hidden space-y-3 py-2">
+                    <p class="text-xs text-gray-600">Transfer ke Nomor Virtual Account Bank:</p>
+                    <div class="p-3 bg-gray-50 rounded-xl border flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-gray-500 block">BCA Virtual Account</span>
+                            <span class="font-mono text-base font-extrabold text-gray-800">880012389100223</span>
+                        </div>
+                        <button onclick="copyVA()" class="text-xs text-indigo-600 font-bold hover:underline">Salin</button>
+                    </div>
+                </div>
+
+                <!-- Card Display -->
+                <div id="pay-content-card" class="hidden space-y-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Nomor Kartu</label>
+                        <input type="text" placeholder="4500 0000 0000 0000" class="w-full px-3 py-2 bg-gray-50 border rounded-lg text-sm">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">Kadaluarsa</label>
+                            <input type="text" placeholder="MM/YY" class="w-full px-3 py-2 bg-gray-50 border rounded-lg text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">CVV</label>
+                            <input type="text" placeholder="123" class="w-full px-3 py-2 bg-gray-50 border rounded-lg text-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="processSimulatedPayment()" id="btn-pay-confirm" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-100 transition">
+                    Konfirmasi Pembayaran Saya
+                </button>
+            </div>
+        </section>
+
+        <!-- SECTION 4: E-TICKET (SUCCESS) -->
+        <section id="section-ticket" class="hidden max-w-lg mx-auto">
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+                <!-- Header Ticket -->
+                <div class="bg-emerald-600 text-white p-6 text-center relative">
+                    <div class="w-12 h-12 bg-white text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-2 text-xl font-bold shadow-md">
+                        <i class="fa-solid fa-[#059669] fa-check"></i>
+                    </div>
+                    <h2 class="text-xl font-extrabold">Pembayaran Berhasil!</h2>
+                    <p class="text-xs text-emerald-100 mt-1">E-Ticket resmi Anda telah terbit</p>
+                </div>
+
+                <!-- Ticket Content -->
+                <div class="p-6 space-y-4" id="ticket-print-area">
+                    <div class="flex justify-between items-center pb-3 border-b">
+                        <div>
+                            <span class="text-xs text-gray-400 block">Kode Booking</span>
+                            <span class="font-mono font-bold text-indigo-600 text-base" id="t-booking-code">TKT-XXXXX</span>
+                        </div>
+                        <span class="text-xs px-2.5 py-1 bg-emerald-100 text-emerald-700 font-bold rounded-full">LUNAS</span>
+                    </div>
+
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Destinasi:</span>
+                            <span class="font-bold text-gray-800" id="t-dest-name">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Nama Pemesan:</span>
+                            <span class="font-bold text-gray-800" id="t-cust-name">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Tanggal Kunjungan:</span>
+                            <span class="font-bold text-gray-800" id="t-visit-date">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Jumlah Tiket:</span>
+                            <span class="font-bold text-gray-800" id="t-qty">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Total Biaya:</span>
+                            <span class="font-bold text-emerald-600" id="t-total">-</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t text-center space-y-2">
+                        <p class="text-xs text-gray-400">Tunjukkan QR Code ini kepada petugas pintu masuk:</p>
+                        <div class="w-36 h-36 bg-gray-100 rounded-lg mx-auto flex items-center justify-center p-2 border">
+                            <img id="t-qr-image" src="" alt="Ticket QR" class="w-full h-full object-contain">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="p-4 bg-gray-50 border-t flex gap-2">
+                    <button onclick="window.print()" class="flex-1 py-2.5 bg-gray-800 hover:bg-gray-900 text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-[#ffffff] fa-print"></i> Cetak E-Ticket
+                    </button>
+                    <button onclick="showSection('catalog')" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition">
+                        Selesai
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: RIWAYAT PEMESANAN -->
+        <section id="section-history" class="hidden space-y-4 max-w-3xl mx-auto">
+            <h2 class="text-xl font-bold text-gray-800">Tiket Saya</h2>
+            <div id="history-container" class="space-y-3">
+                <!-- Data riwayat dari LocalStorage akan dipasang di sini -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-auto py-6 text-center text-xs text-gray-400">
+        <p>© 2026 GoWisata System. All rights reserved.</p>
+    </footer>
+
+    <!-- Custom JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
